@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 🛰️ Satellite Coverage Optimizer
 
 📋 Project Overview
@@ -217,3 +218,6 @@ Version: 1.0
 Last Updated: 2025
 Status: Completed ✅
 
+=======
+# SatteliteCoverageOptimizer
+>>>>>>> a2c9de6201131781ace78a52aa03508b1fb5cd83

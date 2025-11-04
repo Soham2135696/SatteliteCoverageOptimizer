@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Coverage Optimizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; 
+            padding: 20px;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            padding: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+            color: #2c3e50; 
+        }
+        .header h1 { 
+            font-size: 2.8rem; 
+            margin-bottom: 10px; 
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .control-panel { 
+            background: #f8f9fa; 
+            padding: 25px; 
+            border-radius: 10px; 
+            margin-bottom: 30px; 
+        }
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; 
+            gap: 12px; 
+            align-items: end; 
+        }
+        input, select, button { 
+            padding: 12px; 
+            border: 2px solid #e1e8ed; 
+            border-radius: 8px; 
+            font-size: 14px; 
+        }
+        button { 
+            background: #3498db; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover { 
+            background: #2980b9; 
+            transform: translateY(-2px);
+        }
+        .optimize-btn { 
+            background: #27ae60; 
+            padding: 15px 40px; 
+            font-size: 18px; 
+            display: block;
+            margin: 20px auto;
+        }
+        .optimize-btn:hover { 
+            background: #219a52; 
+        }
+        .satellites-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            margin: 30px 0; 
+        }
+        .satellite-card { 
+            border: 2px solid #e1e8ed; 
+            border-radius: 10px; 
+            padding: 20px; 
+            background: white;
+            transition: all 0.3s;
+        }
+        .satellite-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #3498db;
+        }
+        .card-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .satellite-name { 
+            font-weight: bold; 
+            color: #2c3e50; 
+            font-size: 1.2em;
+        }
+        .region-badge { 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 0.8em; 
+            font-weight: bold;
+            color: white;
+        }
+        .asia { background: #ff6b6b; }
+        .europe { background: #4ecdc4; }
+        .americas { background: #45b7d1; }
+        .global { background: #96ceb4; }
+        .remove-btn { 
+            background: #e74c3c; 
+            color: white; 
+            border: none; 
+            border-radius: 50%; 
+            width: 30px; 
+            height: 30px; 
+            cursor: pointer; 
+            font-size: 1.2em; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        .satellite-details div { 
+            margin-bottom: 8px; 
+            color: #555; 
+        }
+        .timeline-container { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 30px 0; 
+            height: 120px; 
+            position: relative;
+            border: 2px dashed #ddd;
+        }
+        .timeline-axis { 
+            display: flex; 
+            justify-content: space-between; 
+            position: absolute; 
+            bottom: 10px; 
+            width: calc(100% - 40px); 
+        }
+        .timeline-hour { 
+            font-size: 12px; 
+            color: #666; 
+        }
+        .summary { 
+            background: #e8f5e8; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px; 
+            border-left: 5px solid #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛰️ Satellite Coverage Optimizer</h1>
+            <p>Visual optimization tool for satellite coverage planning</p>
+        </div>
+
+        <div class="control-panel">
+            <h3>Add New Satellite</h3>
+            <div class="form-grid">
+                <input type="text" id="satName" placeholder="Satellite Name" value="Sat-Zeta">
+                <input type="number" id="satStart" placeholder="Start Hour" value="6" min="0" max="24" step="0.5">
+                <input type="number" id="satEnd" placeholder="End Hour" value="12" min="0" max="24" step="0.5">
+                <input type="number" id="satCost" placeholder="Cost" value="1400" min="0" step="100">
+                <select id="satRegion">
+                    <option value="Asia">Asia</option>
+                    <option value="Europe">Europe</option>
+                    <option value="Americas">Americas</option>
+                    <option value="Global">Global</option>
+                </select>
+                <button onclick="addSatellite()">Add Satellite</button>
+            </div>
+        </div>
+
+        <button class="optimize-btn" onclick="runOptimization()">🚀 Run Coverage Optimization</button>
+
+        <div>
+            <h3>Current Satellites (<span id="satCount">5</span>)</h3>
+            <div class="satellites-grid" id="satellitesGrid">
+                <!-- Satellites will be added here by JavaScript -->
+            </div>
+        </div>
+
+        <div>
+            <h3>Coverage Timeline</h3>
+            <div class="timeline-container" id="timeline">
+                <div class="timeline-axis">
+                    <!-- Timeline hours will be added by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="summary" id="summary">
+            <h3>Coverage Summary</h3>
+            <p>Total Coverage: <strong>18 hours</strong> | Satellites Used: <strong>3</strong> | Total Cost: <strong>$4,500</strong></p>
+            <p>Coverage Percentage: <strong>75%</strong> | Gaps: <strong>2</strong></p>
+        </div>
+    </div>
+
+    <script>
+        let satellites = [
+            { name: 'Sat-Alpha', start: 0, end: 6, cost: 1200, region: 'Asia' },
+            { name: 'Sat-Beta', start: 4, end: 10, cost: 1500, region: 'Europe' },
+            { name: 'Sat-Gamma', start: 8, end: 14, cost: 1800, region: 'Asia' },
+            { name: 'Sat-Delta', start: 12, end: 18, cost: 1300, region: 'Americas' },
+            { name: 'Sat-Epsilon', start: 16, end: 22, cost: 1600, region: 'Europe' }
+        ];
+
+        function renderSatellites() {
+            const grid = document.getElementById('satellitesGrid');
+            const count = document.getElementById('satCount');
+            
+            grid.innerHTML = '';
+            count.textContent = satellites.length;
+            
+            satellites.forEach((sat, index) => {
+                const card = document.createElement('div');
+                card.className = 'satellite-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="satellite-name">${sat.name}</span>
+                        <span class="region-badge ${sat.region.toLowerCase()}">${sat.region}</span>
+                        <button class="remove-btn" onclick="removeSatellite(${index})">×</button>
+                    </div>
+                    <div class="satellite-details">
+                        <div>Time: ${sat.start}h - ${sat.end}h</div>
+                        <div>Duration: ${sat.end - sat.start}h</div>
+                        <div>Cost: $${sat.cost}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            updateTimeline();
+        }
+
+        function addSatellite() {
+            const name = document.getElementById('satName').value;
+            const start = parseFloat(document.getElementById('satStart').value);
+            const end = parseFloat(document.getElementById('satEnd').value);
+            const cost = parseFloat(document.getElementById('satCost').value);
+            const region = document.getElementById('satRegion').value;
+
+            if (name && !isNaN(start) && !isNaN(end) && !isNaN(cost)) {
+                satellites.push({ name, start, end, cost, region });
+                renderSatellites();
+                
+                // Clear form
+                document.getElementById('satName').value = '';
+                document.getElementById('satStart').value = '';
+                document.getElementById('satEnd').value = '';
+                document.getElementById('satCost').value = '';
+            } else {
+                alert('Please fill all fields correctly!');
+            }
+        }
+
+        function removeSatellite(index) {
+            satellites.splice(index, 1);
+            renderSatellites();
+        }
+
+        function updateTimeline() {
+            const timeline = document.getElementById('timeline');
+            const axis = timeline.querySelector('.timeline-axis');
+            
+            // Clear existing content except axis
+            Array.from(timeline.children).forEach(child => {
+                if (!child.classList.contains('timeline-axis')) {
+                    timeline.removeChild(child);
+                }
+            });
+            
+            // Add timeline bars
+            satellites.forEach(sat => {
+                const bar = document.createElement('div');
+                const left = (sat.start / 24) * 100;
+                const width = ((sat.end - sat.start) / 24) * 100;
+                
+                bar.style.position = 'absolute';
+                bar.style.left = left + '%';
+                bar.style.width = width + '%';
+                bar.style.top = '20px';
+                bar.style.height = '60px';
+                bar.style.background = getRegionColor(sat.region);
+                bar.style.borderRadius = '5px';
+                bar.style.opacity = '0.8';
+                bar.style.cursor = 'pointer';
+                bar.title = `${sat.name} (${sat.region}): ${sat.start}h-${sat.end}h`;
+                
+                timeline.appendChild(bar);
+            });
+        }
+
+        function getRegionColor(region) {
+            const colors = {
+                'Asia': '#ff6b6b',
+                'Europe': '#4ecdc4', 
+                'Americas': '#45b7d1',
+                'Global': '#96ceb4'
+            };
+            return colors[region] || '#cccccc';
+        }
+
+        function runOptimization() {
+            alert('🚀 Optimization Algorithm Running!\n\nThis would connect to your backend and run the C++ optimization algorithms.\n\nSelected satellites would be highlighted and coverage gaps shown.');
+            
+            // Simulate optimization results
+            document.getElementById('summary').innerHTML = `
+                <h3>🚀 Optimization Results</h3>
+                <p>Optimal Satellites Selected: <strong>Sat-Alpha, Sat-Gamma, Sat-Epsilon</strong></p>
+                <p>Total Coverage: <strong>20 hours</strong> | Satellites Used: <strong>3</strong> | Total Cost: <strong>$4,600</strong></p>
+                <p>Coverage Percentage: <strong>83%</strong> | Gaps: <strong>1 (14h-16h)</strong></p>
+            `;
+        }
+
+        // Initialize timeline axis
+        function initTimelineAxis() {
+            const axis = document.querySelector('.timeline-axis');
+            for (let i = 0; i <= 24; i += 2) {
+                const hour = document.createElement('div');
+                hour.className = 'timeline-hour';
+                hour.textContent = i + 'h';
+                axis.appendChild(hour);
+            }
+        }
+
+        // Initialize the application
+        initTimelineAxis();
+        renderSatellites();
+    </script>
+</body>
+</html>
